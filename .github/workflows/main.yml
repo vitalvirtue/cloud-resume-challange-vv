@@ -11,7 +11,7 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: |
-          cd cloud-resume-challange-vv/tests/
+          cd ./tests/
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run tests with pytest
@@ -32,9 +32,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: sam build
-        working-directory: cloud-resume-challange-vv
+        working-directory: ./
       - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
-        working-directory: cloud-resume-challange-vv
+        working-directory: ./
 
   deploy-site:
     runs-on: ubuntu-latest
