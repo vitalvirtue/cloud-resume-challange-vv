@@ -24,7 +24,7 @@ jobs:
       - name: test get-function
         run: python -m unittest tests/unit/test_sum.py
   
-  build-infra: 
+  deploy-infra: 
     needs: test-infra 
     runs-on: ubuntu-latest
     steps: 
