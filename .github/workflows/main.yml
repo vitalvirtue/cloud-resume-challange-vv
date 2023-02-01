@@ -16,46 +16,33 @@ jobs:
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.9'
-          # Optional - x64 or x86 architecture, defaults to x64
-          architecture: 'x64'
+         python-version: ${{env.PYTHON_VERSION }}
+      - name: install boto3
+        run: pip install boto3
+      - name: install json
+        run: pip install json
       - name: test get-function
         run: python -m unittest tests/unit/test_sum.py
   
-  deploy-infra: 
+  deploy-infra:
     needs: test-infra
     runs-on: ubuntu-latest
-    steps: 
-      - uses: actions/checkout@v3 
+    steps:
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9' 
+          python-version: '3.9'
+          architecture: 'x64'
       - uses: aws-actions/setup-sam@v2
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - name: Install dependencies 
-        run: |
-          python -m pip install --upgrade pip
-      - name: Install boto 3
-        run: |
-          pip install boto3
-      - name: Install moto
-        run: |
-          pip install moto 
-      - name: Build SAM
-        run: sam build  
-        working-directory: cloud-resume-challenge-vv
-      - name: Deploy 
-        # Prevent prompts and failure when the stack is unchanged
-        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
-        working-directory: cloud-resume-challenge-vv
+      - run: sam build
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
   
   deploy-site:
-    needs: deploy-infra
     runs-on: ubuntu-latest         
     steps:
       - uses: actions/checkout@v3
