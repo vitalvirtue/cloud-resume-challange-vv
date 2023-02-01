@@ -19,9 +19,9 @@ jobs:
       - name: install boto3
         run: pip install boto3
       - name: Test Get Function
-        run: cd getFunction && python test.py -v && cd ..
+        run: cd GetFunction && python test.py -v && cd ..
       - name: Test Put Function
-        run: cd putFunction && python test.py -v && cd ..
+        run: cd PutFunction && python test.py -v && cd ..
 
   deploy-infra:
       runs-on: ubuntu-latest
