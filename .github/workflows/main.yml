@@ -1,53 +1,55 @@
 name: main
-on: [push]
-
-env:
-  PYTHON_VERSION: 3.9
-  AWS_DEFAULT_REGION: 'us-east-1'
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+on:
+  push:
+    branches: [ master ]
 
 jobs:
-  test-infra:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: test get-function
-        run: cd get-function && go test -v ./ && cd ../../
-      - name: test put-function
-        run: cd put-function && go test -v ./ && cd ../../
+  build:
 
-  
-  deploy-infra:
-    needs: test-infra
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          architecture: 'x64'
-      - uses: aws-actions/setup-sam@v2
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - run: sam build
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
-  
-  deploy-site:
-    runs-on: ubuntu-latest         
-    steps:
-      - uses: actions/checkout@v2
-      - uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: ronit-demo-site
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+    - name: Install boto 3
+      run: |
+        pip install boto3
+    - name: Install moto
+      run: |
+        pip install moto
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Test with unittest
+      run: |
+        ls
+        cd tests/unit
+        python test_sum.py
+        cd ..
+        ls
+    - name: SAM Build
+      uses: youyo/aws-sam-action/python3.9@master
+      with:
+        sam_command: build
+      env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: ./resume-site
+          AWS_DEFAULT_REGION:  us-east-1
+    - name: sam deploy
+      uses: youyo/aws-sam-action/python3.9@master
+      with:
+          sam_command: 'deploy --stack-name cloud-resume --no-fail-on-empty-changeset'
+      env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1  
