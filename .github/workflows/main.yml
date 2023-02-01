@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps: 
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2.2.2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{env.PYTHON_VERSION }}
       - name: install boto3
@@ -28,8 +28,8 @@ jobs:
   deploy-infra:
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v2
-        - uses: actions/setup-python@v2
+        - uses: actions/checkout@v3
+        - uses: actions/setup-python@v4
           with:
             python-version: '3.9'
             architecture: 'x64'
@@ -46,7 +46,7 @@ jobs:
     needs: deploy-infra
     runs-on: ubuntu-latest         
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
