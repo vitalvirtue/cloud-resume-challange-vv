@@ -10,22 +10,16 @@ env:
 jobs:
   test-infra:
     runs-on: ubuntu-latest
-    name: Set up Python 3.9
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.9'
-          # Optional - x64 or x86 architecture, defaults to x64
-          architecture: 'x64'
-      - name: install boto3
-        run: pip install boto3
-      - name: install json
-        run: pip install json
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: test get-function
-        run: python -m unittest tests/unit/test_sum.py
+        run: cd get-function && go test -v ./ && cd ../../
+      - name: test put-function
+        run: cd put-function && go test -v ./ && cd ../../
+
   
   deploy-infra:
     needs: test-infra
@@ -48,11 +42,12 @@ jobs:
   deploy-site:
     runs-on: ubuntu-latest         
     steps:
-      - uses: actions/checkout@v3
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v2
+      - uses: jakejarvis/s3-sync-action@master
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Deploy site
-        run: aws s3 sync cloud-resume-challange-vv/resume-site s3://s3-bucket-vv
+          args: --delete
+        env:
+          AWS_S3_BUCKET: ronit-demo-site
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: ./resume-site
