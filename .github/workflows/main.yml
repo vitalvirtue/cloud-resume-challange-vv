@@ -1,55 +1,50 @@
 name: main
-on:
-  push:
-    branches: [ master ]
-
+on: push
 jobs:
-  build:
-
+  test-infra:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 2
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-    - name: Install boto 3
-      run: |
-        pip install boto3
-    - name: Install moto
-      run: |
-        pip install moto
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-    - name: Test with unittest
-      run: |
-        ls
-        cd tests/unit
-        python test_sum.py
-        cd ..
-        ls
-    - name: SAM Build
-      uses: youyo/aws-sam-action/python3.9@master
-      with:
-        sam_command: build
-      env:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          cd cloud-resume-challange-vv/tests/
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run tests with pytest
+        env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION:  us-east-1
-    - name: sam deploy
-      uses: youyo/aws-sam-action/python3.9@master
-      with:
-          sam_command: 'deploy --stack-name cloud-resume --no-fail-on-empty-changeset'
-      env:
+        run: pytest
+
+  build-and-deploy-infra:
+    needs: test-infra
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - run: sam build
+        working-directory: cloud-resume-challange-vv
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+        working-directory: cloud-resume-challange-vv
+
+  deploy-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: YOUR_BUCKET_NAME
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1  
+          SOURCE_DIR: cloud-resume-challange-vv/resume-site
