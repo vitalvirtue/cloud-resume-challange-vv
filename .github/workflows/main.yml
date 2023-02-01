@@ -1,9 +1,11 @@
 name: main
 on: [push]
 
-permissions:
-  id-token: write
-  contents: read
+env:
+  PYTHON_VERSION: 3.9
+  AWS_DEFAULT_REGION: 'us-east-1'
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   test-infra:
@@ -53,14 +55,14 @@ jobs:
         working-directory: cloud-resume-challenge-vv
   
   deploy-site:
-    runs-on: ubuntu-latest
+    needs: deploy-infra
+    runs-on: ubuntu-latest         
     steps:
       - uses: actions/checkout@v3
-      - uses: jakejarvis/s3-sync-action@master
+      - uses: aws-actions/configure-aws-credentials@v1
         with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: s3-bucket-vv
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE-DIR: cloud-resume-challenge-vv/resume-site
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Deploy site
+        run: aws s3 sync ./resume-site s3://s3-bucket-vv
