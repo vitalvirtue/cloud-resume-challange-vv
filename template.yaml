@@ -92,7 +92,7 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: s3-table-vv
-      CodeUri: get-function/
+      CodeUri: GetFunction/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
@@ -109,7 +109,7 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: s3-table-vv
-      CodeUri: put-function/
+      CodeUri: PutFunction/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
