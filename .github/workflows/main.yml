@@ -1,50 +1,56 @@
 name: main
 on: push
-jobs:
-  test-infra:
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.9
-      - name: Install dependencies
-        run: |
-          cd ./tests/
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Run tests with pytest
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: pytest
+env:
+  PYTHON_VERSION: 3.9
+  AWS_DEFAULT_REGION: 'us-east-1'
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-  build-and-deploy-infra:
-    needs: test-infra
+jobs:
+
+  test-app:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps: 
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2.2.2
+        with:
+          python-version: ${{env.PYTHON_VERSION }}
+      - name: install boto3
+        run: pip install boto3
+      - name: install json
+        run: pip install json
+      - name: Test Get Function
+        run: cd getFunction && python test.py -v && cd ..
+      - name: Test Put Function
+        run: cd putFunction && python test.py -v && cd ..
+
+  deploy-infra:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-python@v2
+          with:
+            python-version: '3.9'
+            architecture: 'x64'
+        - uses: aws-actions/setup-sam@v1
+        - uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: us-east-1
+        - run: sam build
+        - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+
+  deploy-site:
+    needs: deploy-infra
+    runs-on: ubuntu-latest         
     steps:
-      - uses: actions/checkout@v3
-      - uses: aws-actions/setup-sam@v2
+      - uses: actions/checkout@v2
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - run: sam build
-        working-directory: ./
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
-        working-directory: ./
-
-  deploy-site:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: s3://s3-bucket-vv
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: cloud-resume-challange-vv/resume-site
+      - name: Deploy site
+        run: aws s3 sync ./resume-site s3://s3-bucket-vv
