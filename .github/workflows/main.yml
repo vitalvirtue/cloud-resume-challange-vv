@@ -1,5 +1,5 @@
 name: main
-on: push
+on: [push]
 env:
   PYTHON_VERSION: 3.9
   AWS_DEFAULT_REGION: 'us-east-1'
