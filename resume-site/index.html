@@ -26,8 +26,8 @@
     <![endif]-->
     <!-- Visitors JS -->
     <script>
-        fetch('https://u2l5m8yrz4.execute-api.us-east-1.amazonaws.com/Prod/put')
-            .then(() => fetch('https://u2l5m8yrz4.execute-api.us-east-1.amazonaws.com/Prod/get'))
+        fetch(' https://pznlg04dkb.execute-api.us-east-1.amazonaws.com/Prod/put')
+            .then(() => fetch(' https://pznlg04dkb.execute-api.us-east-1.amazonaws.com/Prod/get'))
             .then(response => response.json())
             .then(data => {
                 document.getElementById('visitors').innerText = data['counter']
