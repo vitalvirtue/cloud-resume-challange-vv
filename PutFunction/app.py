@@ -25,7 +25,7 @@ def lambda_handler(event, context):
         response = table.update_item(
              Key={
                 'ID': {
-                    "S": "visitors"
+                    "S": ID
                 }
             },
             UpdateExpression="set total_count = total_count + :N",
