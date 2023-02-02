@@ -30,7 +30,7 @@ def lambda_handler(event, context):
                         'Access-Control-Allow-Origin': '*',
                         'Access-Control-Allow-Methods': '*'
             },
-            "body": json.dumps({"counter": response['Item'].get('total_count')}),
+            "body": json.dumps({"counter": int(response['Item'].get('total_count'))}),
         }
     else:
         # If the item was not found, display an error message
