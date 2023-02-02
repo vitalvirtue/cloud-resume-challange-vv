@@ -10,7 +10,7 @@ jobs:
 
   test-app:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 3
     steps: 
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -24,9 +24,6 @@ jobs:
         run: cd PutFunction && python test.py -v && cd ..
 
   deploy-infra:
-    permissions:
-      id-token: write # need this for OIDC
-      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
