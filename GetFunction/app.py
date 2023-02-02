@@ -8,7 +8,7 @@ table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
     # Specify the ID to be fetched
-    ID = event.get("ID", "visitors")
+    ID = event.get("ID", "total_count")
 
     # Display a log message indicating the item ID being fetched
     print('Fetching Item with ID = {} from the DynamoDB table'.format(ID))
