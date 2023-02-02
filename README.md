@@ -1,10 +1,11 @@
-<img src="https://github.com/vitalvirtue/cloud-resume-challange-vv/blob/main/crc.png" />
+<img src="https://github.com/vitalvirtue/cloud-resume-challange-vv/blob/master/crc.png" />
 
 ## I recently completed the AWS Cloud Resume Challenge and I highly recommend it to others. 
 
 My journey with AWS started a few weeks ago with <a href="https://aws.amazon.com/training/digital/aws-cloud-quest/">AWS Cloud Quest</a>. I really liked the hands-on teaching style of the game. I have always been a believer in learning through hands-on experience, and the Cloud Resume Challenge has allowed me to further develop my cloud and DevOps skills.
 
 You can find mine at <a href="https://vitalvirtue.xyz">vitalvirtue.xyz</a>.
+
 <a href="https://cloudresumechallenge.dev/">The Cloud Resume Challenge</a> helps with that.
 
 The challenge consists of two parts: building a website and creating a visitor counter API. The website must be hosted on S3 and distributed through CloudFront, while the visitor counter must utilize API Gateway, Lambda, and DynamoDB, and must be defined and deployed using infrastructure as code and GitHub Actions.
