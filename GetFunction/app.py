@@ -6,10 +6,10 @@ dynamodb = boto3.resource('dynamodb')
 table_name = 's3-table-name'
 table = dynamodb.Table(table_name)
 
-# Specify the ID to be fetched
-ID = '0'
-
 def lambda_handler(event, context):
+    # Specify the ID to be fetched
+    ID = event.get("ID", "0")
+
     # Display a log message indicating the item ID being fetched
     print('Fetching Item with ID = {} from the DynamoDB table'.format(ID))
     

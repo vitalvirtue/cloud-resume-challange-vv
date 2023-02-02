@@ -1,7 +1,5 @@
 
 import unittest
-import boto3
-import json
 import app
 
 
