@@ -9,7 +9,7 @@ table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
     # Specify the ID to be fetched
-    ID = event.get("ID", "0")
+    ID = str(event.get("ID", "0"))
 
     # Indicate that the item is being fetched from the database
     print(f'Retrieving item with ID {ID} from table {table_name}...')
