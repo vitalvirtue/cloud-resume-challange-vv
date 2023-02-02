@@ -8,22 +8,21 @@ table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
     # Specify the ID to be fetched
-    ID = event.get("ID", "visitors")
 
     # Indicate that the item is being fetched from the database
-    print(f'Retrieving item with ID {ID} from table {table_name}...')
+    print(f'Retrieving item with ID from table {table_name}...')
     
     # Get the item with the specified ID
     response = table.get_item(
         Key={
-            'ID': ID
+            'ID': 'visitors'
         }
     )
     
     # If the item was found, update the "total_count" value
     if 'Item' in response:
         response = table.update_item(
-             Key={
+            Key={
                 'ID': 'visitors'
             },
             UpdateExpression="set total_count = total_count + :N",
@@ -38,7 +37,7 @@ def lambda_handler(event, context):
         else:
             print(f'Update failed with HTTP status code: {response["ResponseMetadata"]["HTTPStatusCode"]}')
     else:
-        print(f'Item with ID {ID} was not found in table {table_name}')
+        print(f'Item with ID  was not found in table {table_name}')
         
     # Return the response with CORS headers
     return {
