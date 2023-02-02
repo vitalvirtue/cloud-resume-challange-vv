@@ -8,6 +8,7 @@ table = dynamodb.Table(table_name)
 
 ID='0'
 
+
 def lambda_handler(event, context):
 
     # Display a log message indicating the item ID being fetched
