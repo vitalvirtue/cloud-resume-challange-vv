@@ -1,6 +1,5 @@
 import json
 import boto3
-from botocore.exceptions import ClientError
 
 # Establish the DynamoDB resource and the table to be used
 dynamodb = boto3.resource('dynamodb')
@@ -21,10 +20,13 @@ def lambda_handler(event, context):
         }
     )
     
-    try:
+    # If the item was found, update the "total_count" value
+    if 'Item' in response:
         response = table.update_item(
              Key={
-                'ID': ID
+                'ID': {
+                    "S": "visitors"
+                }
             },
             UpdateExpression="set total_count = total_count + :N",
             ExpressionAttributeValues={
@@ -37,27 +39,9 @@ def lambda_handler(event, context):
             print(f'Item updated successfully with HTTP status code {response["ResponseMetadata"]["HTTPStatusCode"]}')
         else:
             print(f'Update failed with HTTP status code: {response["ResponseMetadata"]["HTTPStatusCode"]}')
-            
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'ValidationException':
-            response = table.update_item(
-                Key={
-                    'ID': ID
-                },
-                UpdateExpression="set total_count = total_count + :N",
-                ExpressionAttributeValues={
-                    ':N': 1
-                }
-            )
-            
-            # Check if the update was successful
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                print(f'Item updated successfully with HTTP status code {response["ResponseMetadata"]["HTTPStatusCode"]}')
-            else:
-                print(f'Update failed with HTTP status code: {response["ResponseMetadata"]["HTTPStatusCode"]}')
-        else:
-            raise
-
+    else:
+        print(f'Item with ID {ID} was not found in table {table_name}')
+        
     # Return the response with CORS headers
     return {
         "statusCode": 200,
