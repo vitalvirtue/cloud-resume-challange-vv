@@ -16,9 +16,7 @@ def lambda_handler(event, context):
     # Get the item with the specified ID
     response = table.get_item(
         Key={
-            'ID': {
-                "S": "visitors"
-            }
+            'ID': ID
         }
     )
     
@@ -26,9 +24,7 @@ def lambda_handler(event, context):
     if 'Item' in response:
         response = table.update_item(
              Key={
-                'ID': {
-                    "S": "visitors"
-                }
+                'ID': ID
             },
             UpdateExpression="set total_count = total_count + :N",
             ExpressionAttributeValues={
