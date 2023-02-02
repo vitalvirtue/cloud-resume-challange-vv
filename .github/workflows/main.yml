@@ -10,7 +10,7 @@ jobs:
 
   test-app:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 2
     steps: 
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -34,8 +34,8 @@ jobs:
         - uses: aws-actions/setup-sam@v2
         - uses: aws-actions/configure-aws-credentials@v1
           with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
             aws-region: us-east-1
         - run: sam build
         - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
@@ -47,8 +47,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Deploy site
         run: aws s3 sync ./resume-site s3://s3-bucket-vv
