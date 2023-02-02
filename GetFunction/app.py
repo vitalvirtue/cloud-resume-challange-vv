@@ -3,7 +3,7 @@ import boto3
 
 # Establish the DynamoDB resource and the table to be used
 dynamodb = boto3.resource('dynamodb')
-table_name = 's3-table-name'
+table_name = 's3-table-vv'
 table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
