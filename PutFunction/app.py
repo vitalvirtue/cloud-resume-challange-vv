@@ -9,7 +9,7 @@ table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
     # Specify the ID to be fetched
-    ID = str(event.get("ID", "0"))
+    ID = event.get("ID", "visitors")
 
     # Indicate that the item is being fetched from the database
     print(f'Retrieving item with ID {ID} from table {table_name}...')
@@ -25,7 +25,8 @@ def lambda_handler(event, context):
     if 'Item' in response:
         response = table.update_item(
              Key={
-                'ID': ID
+                'ID': ID,
+                'table_name': table_name
             },
             UpdateExpression="set total_count = total_count + :N",
             ExpressionAttributeValues={

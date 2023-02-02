@@ -16,7 +16,8 @@ def lambda_handler(event, context):
     # Attempt to retrieve the item from the table
     response = table.get_item(
         Key={
-            'ID': ID
+            'ID': ID,
+            'table_name': table_name
         }
     )
     
