@@ -24,21 +24,24 @@ jobs:
         run: cd PutFunction && python test.py -v && cd ..
 
   deploy-infra:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-        - uses: actions/setup-python@v4
-          with:
-            python-version: '3.9'
-            architecture: 'x64'
-        - uses: aws-actions/setup-sam@v2
-        - uses: aws-actions/configure-aws-credentials@v1
-          with:
-            aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-1
-        - run: sam build
-        - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+    permissions:
+      id-token: write # need this for OIDC
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+      - uses: aws-actions/setup-sam@v2
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - run: sam build
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
 
   deploy-site:
     needs: deploy-infra
