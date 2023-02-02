@@ -1,4 +1,4 @@
-<img align="center" width="50%" src="https://github.com/vitalvirtue/cloud-resume-challange-vv/blob/master/crc.png" />
+<img text-align="center" width="50%" src="https://github.com/vitalvirtue/cloud-resume-challange-vv/blob/master/crc.png" />
 
 ## I recently completed the AWS Cloud Resume Challenge and I highly recommend it to others. 
 
