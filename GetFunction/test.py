@@ -4,7 +4,7 @@ import app
 
 class TestAPI(unittest.TestCase):
     def test_getApi_works(self):
-        event = {'ID': 'visitors'}
+        event = {'ID': 'total_count'}
         result = app.lambda_handler(event, 0)
         self.assertEqual(result['statusCode'], 200)
 
