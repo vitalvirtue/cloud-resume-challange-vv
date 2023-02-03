@@ -2,7 +2,7 @@
 <img width="80%" src="https://github.com/vitalvirtue/cloud-resume-challange-vv/blob/master/crc-aws.png" />
 </p>
 
-## I recently completed the AWS Cloud Resume Challenge and I highly recommend it to others. 
+## I recently completed the AWS Cloud Resume Challenge and I highly recommend it. 
 
 My journey with AWS started a few weeks ago with <a href="https://aws.amazon.com/training/digital/aws-cloud-quest/">AWS Cloud Quest</a>. I really liked the hands-on teaching style of the game. I have always been a believer in learning through hands-on experience, and the Cloud Resume Challenge has allowed me to further develop my cloud and DevOps skills.
 
